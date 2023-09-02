@@ -15,13 +15,13 @@ type contextKey string
 
 const userContextKey = contextKey("authenticated_user")
 
-type authenticatedUser struct {
+type AuthenticatedUser struct {
 	Email string
 	Id    int64
 }
 
-func ContextGetAuthUser(r *http.Request) (*authenticatedUser, error) {
-	user, ok := r.Context().Value(userContextKey).(authenticatedUser)
+func ContextGetAuthUser(r *http.Request) (*AuthenticatedUser, error) {
+	user, ok := r.Context().Value(userContextKey).(AuthenticatedUser)
 	if !ok {
 		return nil, errors.New("user not found in context")
 	}
@@ -29,7 +29,7 @@ func ContextGetAuthUser(r *http.Request) (*authenticatedUser, error) {
 }
 
 func ContextSetUserAuth(r *http.Request, email string, userId int64) context.Context {
-	return context.WithValue(r.Context(), userContextKey, authenticatedUser{
+	return context.WithValue(r.Context(), userContextKey, AuthenticatedUser{
 		Email: email,
 		Id:    userId,
 	})
