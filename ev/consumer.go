@@ -12,7 +12,7 @@ type ConsumerOptions struct {
 	RabbitMQUrl string
 	Exchange    string
 	QueueName   string
-	routingKeys []string
+	RoutingKeys []string
 }
 
 type Consumer struct {
@@ -58,7 +58,7 @@ func NewConsumer(options ConsumerOptions) (*Consumer, error) {
 		return nil, err
 	}
 
-	for _, routingKey := range options.routingKeys {
+	for _, routingKey := range options.RoutingKeys {
 		err = ch.QueueBind(
 			queue.Name,       // queue name
 			routingKey,       // routing key
