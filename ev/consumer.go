@@ -22,6 +22,8 @@ type Consumer struct {
 	channel     *amqp.Channel
 }
 
+type Delivery = amqp.Delivery
+
 func NewConsumer(options ConsumerOptions) (*Consumer, error) {
 	conn, err := amqp.Dial(options.RabbitMQUrl)
 	if err != nil {
