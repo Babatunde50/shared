@@ -42,6 +42,14 @@ func NewPublisher(options PublisherOptions) (*Publisher, error) {
 		return nil, err
 	}
 
+	var args amqp.Table
+
+	if options.ExchangeType == "x-delayed-message" {
+		args = amqp.Table{
+			"x-delayed-type": "direct",
+		}
+	}
+
 	err = ch.ExchangeDeclare(
 		options.Exchange,     // name
 		options.ExchangeType, // type
@@ -49,7 +57,7 @@ func NewPublisher(options PublisherOptions) (*Publisher, error) {
 		false,                // auto-deleted
 		false,                // internal
 		false,                // no-wait
-		nil,                  // arguments
+		args,                 // arguments
 	)
 	if err != nil {
 		return nil, err

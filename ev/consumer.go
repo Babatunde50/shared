@@ -9,10 +9,11 @@ import (
 )
 
 type ConsumerOptions struct {
-	RabbitMQUrl string
-	Exchange    string
-	QueueName   string
-	RoutingKeys []string
+	RabbitMQUrl  string
+	Exchange     string
+	QueueName    string
+	RoutingKeys  []string
+	ExchangeType string
 }
 
 type Consumer struct {
@@ -35,14 +36,26 @@ func NewConsumer(options ConsumerOptions) (*Consumer, error) {
 		return nil, err
 	}
 
+	var args amqp.Table
+	exchangeType := "topic"
+
+	if options.ExchangeType == "x-delayed-message" {
+		args = amqp.Table{
+			"x-delayed-type": "direct",
+		}
+
+		exchangeType = options.ExchangeType
+
+	}
+
 	err = ch.ExchangeDeclare(
 		options.Exchange, // name
-		"topic",          // type
+		exchangeType,     // type
 		true,             // durable
 		false,            // auto-deleted
 		false,            // internal
 		false,            // no-wait
-		nil,              // arguments
+		args,
 	)
 	if err != nil {
 		return nil, err
@@ -100,4 +113,10 @@ func (c *Consumer) Consume() (<-chan amqp.Delivery, error) {
 		false,       // no-wait
 		nil,         // args
 	)
+}
+
+func (c *Consumer) Cancel(consumerName string) error {
+
+	return c.channel.Cancel(consumerName, false)
+
 }
