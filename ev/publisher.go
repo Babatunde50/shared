@@ -98,7 +98,7 @@ func (p *Publisher) Publish(routingKey RoutingKey, message interface{}) error {
 	if p.ExchangeType == "x-delayed-message" {
 		msg = amqp.Publishing{
 			Headers: amqp.Table{
-				"x-delay": int32(15 * time.Minute / time.Millisecond),
+				"x-delay": int32(1 * time.Minute / time.Millisecond),
 			},
 			ContentType: "application/json",
 			Body:        body,
