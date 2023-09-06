@@ -90,14 +90,27 @@ func (p *Publisher) Publish(routingKey RoutingKey, message interface{}) error {
 
 	defer cancel()
 
+	msg := amqp.Publishing{
+		ContentType: "application/json",
+		Body:        body,
+	}
+
+	if p.ExchangeType == "x-delayed-message" {
+		msg = amqp.Publishing{
+			Headers: amqp.Table{
+				"x-delay": int32(15 * time.Minute / time.Millisecond),
+			},
+			ContentType: "application/json",
+			Body:        body,
+		}
+	}
+
 	return p.channel.PublishWithContext(
 		ctx,
 		p.Exchange,         // exchange
 		string(routingKey), // routing key
 		false,              // mandatory
 		false,              // immediate
-		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        body,
-		})
+		msg,
+	)
 }
